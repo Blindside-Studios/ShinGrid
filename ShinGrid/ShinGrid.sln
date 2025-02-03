@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShinGrid", "ShinGrid\ShinGrid.csproj", "{13A31935-62B2-478C-BD96-FC227C887B50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShinGrid-TestPanel", "ShinGrid-TestPanel\ShinGrid-TestPanel.csproj", "{972F6212-C0EA-420F-9725-5B0C0E64A313}"
+	ProjectSection(ProjectDependencies) = postProject
+		{13A31935-62B2-478C-BD96-FC227C887B50} = {13A31935-62B2-478C-BD96-FC227C887B50}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{13A31935-62B2-478C-BD96-FC227C887B50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13A31935-62B2-478C-BD96-FC227C887B50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13A31935-62B2-478C-BD96-FC227C887B50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13A31935-62B2-478C-BD96-FC227C887B50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{972F6212-C0EA-420F-9725-5B0C0E64A313}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{972F6212-C0EA-420F-9725-5B0C0E64A313}.Debug|Any CPU.Build.0 = Debug|x64
+		{972F6212-C0EA-420F-9725-5B0C0E64A313}.Debug|Any CPU.Deploy.0 = Debug|x64
+		{972F6212-C0EA-420F-9725-5B0C0E64A313}.Release|Any CPU.ActiveCfg = Release|x64
+		{972F6212-C0EA-420F-9725-5B0C0E64A313}.Release|Any CPU.Build.0 = Release|x64
+		{972F6212-C0EA-420F-9725-5B0C0E64A313}.Release|Any CPU.Deploy.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ShinGrid-TestPanel (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ShinGrid-TestPanel (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
