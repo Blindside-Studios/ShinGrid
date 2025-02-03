@@ -10,10 +10,6 @@
     
     <Grid x:Name="RootGrid" SizeChanged="RootGrid_SizeChanged">
         <Rectangle x:Name="BackgroundStretchRectangle" Fill="DimGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-        <Grid x:Name="CenteredGrid" HorizontalAlignment="Left" VerticalAlignment="Top">
-            <Grid.TranslationTransition>
-                <Vector3Transition/>
-            </Grid.TranslationTransition>
-        </Grid>
+        <Grid x:Name="CenteredGrid" HorizontalAlignment="Center" VerticalAlignment="Top"/>
     </Grid>
 </Page>

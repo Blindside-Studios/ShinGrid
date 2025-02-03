@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,7 @@ namespace ShinGrid
 
         private void ShinGrid_Loaded(object sender, RoutedEventArgs e)
         {
+            CenteredGrid.Width = RootGrid.ActualWidth;
             LoadItems();
         }
 
@@ -65,20 +67,16 @@ namespace ShinGrid
             }
         }
 
-        private int _lastColumnCount = 0;
+        private bool elementsPositioned = false;
         public void CalculateArrangement()
         {
             double availableSpace = (RootGrid.ActualWidth + ShinGridViewModel.Instance.Spacing) / (ShinGridViewModel.Instance.ColumnWidth + ShinGridViewModel.Instance.Spacing);
             int availableColumns = Convert.ToInt32(Math.Floor(availableSpace));
 
             float centeredGridWidth = availableColumns * (ShinGridViewModel.Instance.ColumnWidth + ShinGridViewModel.Instance.Spacing) - ShinGridViewModel.Instance.Spacing;
-            float centeredGridTranslation = ((float)RootGrid.ActualWidth - centeredGridWidth) / 2;
-            CenteredGrid.Translation = new System.Numerics.Vector3(centeredGridTranslation, 0, 0);
-
-            if (availableColumns == _lastColumnCount)
-            {
-                return; // do not update the layout if it's not necessary
-            }
+            
+            if (elementsPositioned) ResizeGrid(centeredGridWidth); // only play animation when elements were already positioned at some point
+            else CenteredGrid.Width = centeredGridWidth;
 
             var sortedFrames = new List<Frame>();
             foreach (Frame frame in CenteredGrid.Children) sortedFrames.Add(frame);
@@ -135,6 +133,33 @@ namespace ShinGrid
                     frame.Translation = new System.Numerics.Vector3(0, verticalTranslation, 0);
                     _filledColumns = panel.ColumnSpan;
                 }
+            }
+            elementsPositioned = true;
+        }
+
+        private void ResizeGrid(float NewSize)
+        {
+            if (NewSize > 0)
+            {
+                Duration duration = new Duration(TimeSpan.FromSeconds(0.4));
+                QuarticEase quarticEase = new QuarticEase();
+                quarticEase.EasingMode = EasingMode.EaseOut;
+
+                DoubleAnimation doubleAnimation = new DoubleAnimation();
+                doubleAnimation.Duration = duration;
+                doubleAnimation.From = CenteredGrid.ActualWidth;
+                doubleAnimation.To = NewSize;
+                doubleAnimation.EnableDependentAnimation = true;
+                doubleAnimation.EasingFunction = quarticEase;
+
+                Storyboard sb = new Storyboard();
+                sb.Duration = duration;
+                sb.Children.Add(doubleAnimation);
+
+                Storyboard.SetTarget(doubleAnimation, CenteredGrid);
+                Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath("Width").Path);
+
+                sb.Begin();
             }
         }
 
