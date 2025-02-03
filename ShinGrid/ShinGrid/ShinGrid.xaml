@@ -6,10 +6,10 @@
     xmlns:local="using:ShinGrid"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
-    <Grid>
-
+    mc:Ignorable="d">
+    
+    <Grid x:Name="RootGrid">
+        <Rectangle x:Name="BackgroundStretchRectangle" Fill="DimGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <Grid x:Name="CenteredGrid" HorizontalAlignment="Center"/>
     </Grid>
 </Page>

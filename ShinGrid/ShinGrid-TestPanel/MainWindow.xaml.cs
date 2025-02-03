@@ -28,16 +28,17 @@ namespace ShinGrid_TestPanel
         public MainWindow()
         {
             this.InitializeComponent();
-            PublicViewModel.Instance.ColumnWidth = 300;
-            PublicViewModel.Instance.RowHeight = 300;
-            PublicViewModel.Instance.PanelInstances = new List<PanelInstance>()
+            ShinGridViewModel.Instance.ColumnWidth = 300;
+            ShinGridViewModel.Instance.RowHeight = 300;
+            ShinGridViewModel.Instance.CornerRadius = 8;
+            ShinGridViewModel.Instance.PanelInstances = new List<PanelInstance>()
             {
-                new PanelInstance { PageType = typeof(BluePage) },
-                new PanelInstance { PageType = typeof(RedPage), ColumnSpan = 2 },
-                new PanelInstance { PageType = typeof(GreenPage) },
-                new PanelInstance { PageType = typeof(PurplePage) },
-                new PanelInstance { PageType = typeof(BrownPage), ColumnSpan = 2 },
-                new PanelInstance { PageType = typeof(YellowPage) },
+                new PanelInstance { PageType = typeof(BluePage), Index = 0 },
+                new PanelInstance { PageType = typeof(RedPage), ColumnSpan = 2, Index = 1 },
+                new PanelInstance { PageType = typeof(GreenPage), Index = 2 },
+                new PanelInstance { PageType = typeof(PurplePage), Index = 3 },
+                new PanelInstance { PageType = typeof(BrownPage), ColumnSpan = 2, Index = 4 },
+                new PanelInstance { PageType = typeof(YellowPage), Index = 5 },
             };
             ShinGridFrame.NavigateToType(typeof(ShinGrid.ShinGrid), null, null);
         }

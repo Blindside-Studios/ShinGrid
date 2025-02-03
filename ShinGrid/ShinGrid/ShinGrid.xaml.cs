@@ -26,13 +26,34 @@ namespace ShinGrid
         public ShinGrid()
         {
             this.InitializeComponent();
-            PublicViewModel.Instance.PropertyChanged += Instance_PropertyChanged;
+            ShinGridViewModel.Instance.PropertyChanged += Instance_PropertyChanged;
+            LoadItems();
         }
         
         private void Instance_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             // this fires when the cards in the layout change, meaning the list must be updated.
-            throw new NotImplementedException();
+            CenteredGrid.Children.Clear();
+            LoadItems();
+        }
+
+        public void LoadItems()
+        {
+            foreach (PanelInstance _panel in ShinGridViewModel.Instance.PanelInstances)
+            {
+                Frame frame = new Frame();
+                frame.Width = ShinGridViewModel.Instance.ColumnWidth * _panel.ColumnSpan + ShinGridViewModel.Instance.Spacing * (_panel.ColumnSpan - 1);
+                frame.Height = ShinGridViewModel.Instance.RowHeight * _panel.RowSpan + ShinGridViewModel.Instance.Spacing * (_panel.RowSpan - 1);
+                frame.NavigateToType(_panel.PageType, null, null);
+                frame.Tag = _panel;
+                frame.CornerRadius = new CornerRadius(ShinGridViewModel.Instance.CornerRadius);
+                CenteredGrid.Children.Add(frame);
+            }
+        }
+
+        public void CalculateArrangement()
+        {
+
         }
     }
 }

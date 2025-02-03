@@ -14,16 +14,16 @@ namespace ShinGrid
     {
     }
 
-    public class PublicViewModel: INotifyPropertyChanged
+    public class ShinGridViewModel: INotifyPropertyChanged
     {
-        private static PublicViewModel _instance;
-        public static PublicViewModel Instance
+        private static ShinGridViewModel _instance;
+        public static ShinGridViewModel Instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = new PublicViewModel();
+                    _instance = new ShinGridViewModel();
                 }
                 return _instance;
             }
@@ -32,6 +32,10 @@ namespace ShinGrid
         public int ColumnWidth { get; set; } = 300;
 
         public int RowHeight { get; set; } = 300;
+
+        public int Spacing { get; set; } = 10;
+
+        public int CornerRadius { get; set; } = 0;
 
         public List<PanelInstance> PanelInstances
         {
@@ -60,5 +64,6 @@ namespace ShinGrid
         public Type PageType { get; set; }
         public int ColumnSpan { get; set; } = 1;
         public int RowSpan { get; set; } = 1;
+        public int Index { get; set; }
     }
 }
