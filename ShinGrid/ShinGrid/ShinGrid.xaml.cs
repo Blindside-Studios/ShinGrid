@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -26,10 +27,15 @@ namespace ShinGrid
         public ShinGrid()
         {
             this.InitializeComponent();
+            this.Loaded += ShinGrid_Loaded;
             ShinGridViewModel.Instance.PropertyChanged += Instance_PropertyChanged;
+        }
+
+        private void ShinGrid_Loaded(object sender, RoutedEventArgs e)
+        {
             LoadItems();
         }
-        
+
         private void Instance_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             // this fires when the cards in the layout change, meaning the list must be updated.
@@ -47,13 +53,84 @@ namespace ShinGrid
                 frame.NavigateToType(_panel.PageType, null, null);
                 frame.Tag = _panel;
                 frame.CornerRadius = new CornerRadius(ShinGridViewModel.Instance.CornerRadius);
+                frame.HorizontalAlignment = HorizontalAlignment.Left;
+                frame.VerticalAlignment = VerticalAlignment.Top;
                 CenteredGrid.Children.Add(frame);
+            }
+            CalculateArrangement();
+            foreach (Frame frame in CenteredGrid.Children)
+            {
+                // only do this once the initial placement has been done to avoid an awkward entrance animation!
+                frame.TranslationTransition = new Vector3Transition();
             }
         }
 
         public void CalculateArrangement()
         {
+            var sortedFrames = new List<Frame>();
+            foreach (Frame frame in CenteredGrid.Children) sortedFrames.Add(frame);
+            sortedFrames.Sort((Frame a, Frame b) =>
+            {
+                var panelA = (PanelInstance)a.Tag;
+                var panelB = (PanelInstance)b.Tag;
+                return panelA.Index.CompareTo(panelB.Index);
+            });
 
+            double availableSpace = (RootGrid.ActualWidth + ShinGridViewModel.Instance.Spacing) / (ShinGridViewModel.Instance.ColumnWidth + ShinGridViewModel.Instance.Spacing);
+            int availableColumns = Convert.ToInt32(Math.Floor(availableSpace));
+
+            int _filledColumns = 0;
+            int verticalTranslation = 0;
+            HashSet<int> _prematurelyPickedCardIndices = new();
+
+            int ColumnWidth = ShinGridViewModel.Instance.ColumnWidth;
+            int Spacing = ShinGridViewModel.Instance.Spacing;
+
+            foreach (Frame frame in sortedFrames)
+            {
+                PanelInstance panel = frame.Tag as PanelInstance;
+                if (_prematurelyPickedCardIndices.Contains(panel.Index))
+                    continue;
+
+                float newXTranslation = _filledColumns * (ColumnWidth + Spacing);
+
+                if (panel.ColumnSpan <= availableColumns - _filledColumns)
+                {
+                    _filledColumns += panel.ColumnSpan;
+                    frame.Translation = new System.Numerics.Vector3(newXTranslation, verticalTranslation, 0);
+                }
+                else
+                {
+                    int remainingSpace = availableColumns - _filledColumns;
+                    while (remainingSpace > 0)
+                    {
+                        bool foundFit = false;
+                        foreach (Frame subFrame in sortedFrames)
+                        {
+                            PanelInstance subPanel = subFrame.Tag as PanelInstance;
+                            if (subPanel.Index > panel.Index && !_prematurelyPickedCardIndices.Contains(subPanel.Index) && subPanel.ColumnSpan <= remainingSpace)
+                            {
+                                subFrame.Translation = new System.Numerics.Vector3(newXTranslation, verticalTranslation, 0);
+                                _prematurelyPickedCardIndices.Add(subPanel.Index);
+                                _filledColumns += subPanel.ColumnSpan;
+                                newXTranslation += subPanel.ColumnSpan * (ColumnWidth + Spacing);
+                                remainingSpace -= subPanel.ColumnSpan;
+                                foundFit = true;
+                                break;
+                            }
+                        }
+                        if (!foundFit) break;
+                    }
+                    verticalTranslation += ShinGridViewModel.Instance.RowHeight + Spacing;
+                    frame.Translation = new System.Numerics.Vector3(0, verticalTranslation, 0);
+                    _filledColumns = panel.ColumnSpan;
+                }
+            }
+        }
+
+        private void RootGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            CalculateArrangement();
         }
     }
 }

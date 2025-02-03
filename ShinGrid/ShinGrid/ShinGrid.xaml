@@ -8,8 +8,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     
-    <Grid x:Name="RootGrid">
+    <Grid x:Name="RootGrid" SizeChanged="RootGrid_SizeChanged">
         <Rectangle x:Name="BackgroundStretchRectangle" Fill="DimGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-        <Grid x:Name="CenteredGrid" HorizontalAlignment="Center"/>
+        <Grid x:Name="CenteredGrid" HorizontalAlignment="Left" VerticalAlignment="Top"/>
     </Grid>
 </Page>
