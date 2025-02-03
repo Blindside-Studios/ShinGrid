@@ -65,8 +65,21 @@ namespace ShinGrid
             }
         }
 
+        private int _lastColumnCount = 0;
         public void CalculateArrangement()
         {
+            double availableSpace = (RootGrid.ActualWidth + ShinGridViewModel.Instance.Spacing) / (ShinGridViewModel.Instance.ColumnWidth + ShinGridViewModel.Instance.Spacing);
+            int availableColumns = Convert.ToInt32(Math.Floor(availableSpace));
+
+            float centeredGridWidth = availableColumns * (ShinGridViewModel.Instance.ColumnWidth + ShinGridViewModel.Instance.Spacing) - ShinGridViewModel.Instance.Spacing;
+            float centeredGridTranslation = ((float)RootGrid.ActualWidth - centeredGridWidth) / 2;
+            CenteredGrid.Translation = new System.Numerics.Vector3(centeredGridTranslation, 0, 0);
+
+            if (availableColumns == _lastColumnCount)
+            {
+                return; // do not update the layout if it's not necessary
+            }
+
             var sortedFrames = new List<Frame>();
             foreach (Frame frame in CenteredGrid.Children) sortedFrames.Add(frame);
             sortedFrames.Sort((Frame a, Frame b) =>
@@ -75,9 +88,6 @@ namespace ShinGrid
                 var panelB = (PanelInstance)b.Tag;
                 return panelA.Index.CompareTo(panelB.Index);
             });
-
-            double availableSpace = (RootGrid.ActualWidth + ShinGridViewModel.Instance.Spacing) / (ShinGridViewModel.Instance.ColumnWidth + ShinGridViewModel.Instance.Spacing);
-            int availableColumns = Convert.ToInt32(Math.Floor(availableSpace));
 
             int _filledColumns = 0;
             int verticalTranslation = 0;
