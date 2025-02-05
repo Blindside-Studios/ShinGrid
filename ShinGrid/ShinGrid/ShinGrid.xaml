@@ -9,7 +9,7 @@
     mc:Ignorable="d">
     
     <Grid x:Name="RootGrid" SizeChanged="RootGrid_SizeChanged">
-        <Rectangle x:Name="BackgroundStretchRectangle" Fill="DimGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <Rectangle x:Name="BackgroundStretchRectangle" Opacity="0" Fill="DimGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         <Grid x:Name="CenteredGrid" HorizontalAlignment="Center" VerticalAlignment="Top"/>
     </Grid>
 </Page>

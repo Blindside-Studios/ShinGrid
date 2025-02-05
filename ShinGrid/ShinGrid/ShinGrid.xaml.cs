@@ -11,9 +11,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.ViewManagement;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -25,6 +27,8 @@ namespace ShinGrid
     /// </summary>
     public sealed partial class ShinGrid : Page
     {
+        UISettings uiSettings = new UISettings();
+
         public ShinGrid()
         {
             this.InitializeComponent();
@@ -60,11 +64,6 @@ namespace ShinGrid
                 CenteredGrid.Children.Add(frame);
             }
             CalculateArrangement();
-            foreach (Frame frame in CenteredGrid.Children)
-            {
-                // only do this once the initial placement has been done to avoid an awkward entrance animation!
-                frame.TranslationTransition = new Vector3Transition();
-            }
         }
 
         private bool elementsPositioned = false;
@@ -105,6 +104,8 @@ namespace ShinGrid
                 if (panel.ColumnSpan <= availableColumns - _filledColumns)
                 {
                     _filledColumns += panel.ColumnSpan;
+                    if (uiSettings.AnimationsEnabled && elementsPositioned) frame.TranslationTransition = new Vector3Transition();
+                    else if (elementsPositioned) frame.TranslationTransition = null;
                     frame.Translation = new System.Numerics.Vector3(newXTranslation, verticalTranslation, 0);
                 }
                 else
@@ -118,6 +119,8 @@ namespace ShinGrid
                             PanelInstance subPanel = subFrame.Tag as PanelInstance;
                             if (subPanel.Index > panel.Index && !_prematurelyPickedCardIndices.Contains(subPanel.Index) && subPanel.ColumnSpan <= remainingSpace)
                             {
+                                if (uiSettings.AnimationsEnabled && elementsPositioned) subFrame.TranslationTransition = new Vector3Transition();
+                                else if (elementsPositioned) subFrame.TranslationTransition = null;
                                 subFrame.Translation = new System.Numerics.Vector3(newXTranslation, verticalTranslation, 0);
                                 _prematurelyPickedCardIndices.Add(subPanel.Index);
                                 _filledColumns += subPanel.ColumnSpan;
@@ -130,6 +133,8 @@ namespace ShinGrid
                         if (!foundFit) break;
                     }
                     verticalTranslation += ShinGridViewModel.Instance.RowHeight + Spacing;
+                    if (uiSettings.AnimationsEnabled && elementsPositioned) frame.TranslationTransition = new Vector3Transition();
+                    else if (elementsPositioned) frame.TranslationTransition = null;
                     frame.Translation = new System.Numerics.Vector3(0, verticalTranslation, 0);
                     _filledColumns = panel.ColumnSpan;
                 }
@@ -141,25 +146,29 @@ namespace ShinGrid
         {
             if (NewSize > 0)
             {
-                Duration duration = new Duration(TimeSpan.FromSeconds(0.4));
-                QuarticEase quarticEase = new QuarticEase();
-                quarticEase.EasingMode = EasingMode.EaseOut;
+                if (uiSettings.AnimationsEnabled)
+                {
+                    Duration duration = new Duration(TimeSpan.FromSeconds(0.4));
+                    QuarticEase quarticEase = new QuarticEase();
+                    quarticEase.EasingMode = EasingMode.EaseOut;
 
-                DoubleAnimation doubleAnimation = new DoubleAnimation();
-                doubleAnimation.Duration = duration;
-                doubleAnimation.From = CenteredGrid.ActualWidth;
-                doubleAnimation.To = NewSize;
-                doubleAnimation.EnableDependentAnimation = true;
-                doubleAnimation.EasingFunction = quarticEase;
+                    DoubleAnimation doubleAnimation = new DoubleAnimation();
+                    doubleAnimation.Duration = duration;
+                    doubleAnimation.From = CenteredGrid.ActualWidth;
+                    doubleAnimation.To = NewSize;
+                    doubleAnimation.EnableDependentAnimation = true;
+                    doubleAnimation.EasingFunction = quarticEase;
 
-                Storyboard sb = new Storyboard();
-                sb.Duration = duration;
-                sb.Children.Add(doubleAnimation);
+                    Storyboard sb = new Storyboard();
+                    sb.Duration = duration;
+                    sb.Children.Add(doubleAnimation);
 
-                Storyboard.SetTarget(doubleAnimation, CenteredGrid);
-                Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath("Width").Path);
+                    Storyboard.SetTarget(doubleAnimation, CenteredGrid);
+                    Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath("Width").Path);
 
-                sb.Begin();
+                    sb.Begin();
+                }
+                else CenteredGrid.Width = NewSize;
             }
         }
 
