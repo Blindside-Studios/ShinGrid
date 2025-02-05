@@ -45,6 +45,8 @@ namespace ShinGrid
         private void Instance_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             // this fires when the cards in the layout change, meaning the list must be updated.
+            gridLoaded = false;
+            elementsPositioned = false;
             CenteredGrid.Children.Clear();
             LoadItems();
         }
@@ -61,6 +63,7 @@ namespace ShinGrid
                 frame.CornerRadius = new CornerRadius(ShinGridViewModel.Instance.CornerRadius);
                 frame.HorizontalAlignment = HorizontalAlignment.Left;
                 frame.VerticalAlignment = VerticalAlignment.Top;
+                frame.TranslationTransition = null;
                 CenteredGrid.Children.Add(frame);
             }
             CalculateArrangement();
@@ -105,7 +108,7 @@ namespace ShinGrid
                 {
                     _filledColumns += panel.ColumnSpan;
                     if (uiSettings.AnimationsEnabled && elementsPositioned) frame.TranslationTransition = new Vector3Transition();
-                    else if (elementsPositioned) frame.TranslationTransition = null;
+                    else frame.TranslationTransition = null;
                     frame.Translation = new System.Numerics.Vector3(newXTranslation, verticalTranslation, 0);
                 }
                 else
@@ -120,7 +123,7 @@ namespace ShinGrid
                             if (subPanel.Index > panel.Index && !_prematurelyPickedCardIndices.Contains(subPanel.Index) && subPanel.ColumnSpan <= remainingSpace)
                             {
                                 if (uiSettings.AnimationsEnabled && elementsPositioned) subFrame.TranslationTransition = new Vector3Transition();
-                                else if (elementsPositioned) subFrame.TranslationTransition = null;
+                                else subFrame.TranslationTransition = null;
                                 subFrame.Translation = new System.Numerics.Vector3(newXTranslation, verticalTranslation, 0);
                                 _prematurelyPickedCardIndices.Add(subPanel.Index);
                                 _filledColumns += subPanel.ColumnSpan;
@@ -134,12 +137,11 @@ namespace ShinGrid
                     }
                     verticalTranslation += ShinGridViewModel.Instance.RowHeight + Spacing;
                     if (uiSettings.AnimationsEnabled && elementsPositioned) frame.TranslationTransition = new Vector3Transition();
-                    else if (elementsPositioned) frame.TranslationTransition = null;
+                    else frame.TranslationTransition = null;
                     frame.Translation = new System.Numerics.Vector3(0, verticalTranslation, 0);
                     _filledColumns = panel.ColumnSpan;
                 }
             }
-            elementsPositioned = true;
         }
 
         private void ResizeGrid(float NewSize)
@@ -172,9 +174,12 @@ namespace ShinGrid
             }
         }
 
+        bool gridLoaded = false;
         private void RootGrid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            if (gridLoaded) elementsPositioned = true;
             CalculateArrangement();
+            gridLoaded = true;
         }
     }
 }
