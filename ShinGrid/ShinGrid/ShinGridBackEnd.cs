@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,6 +38,21 @@ namespace ShinGrid
 
         public int CornerRadius { get; set; } = 0;
 
+        public int FinalHeight
+        {
+            get => _finalHeight;
+            set
+            {
+                if (_finalHeight != value)
+                {
+                    Debug.WriteLine(value);
+                    _finalHeight = value;
+                    OnHeightChanged(nameof(FinalHeight));
+                }
+            }
+        }
+        private int _finalHeight;
+
         public List<PanelInstance> PanelInstances
         {
             get => _panelInstances;
@@ -52,6 +68,12 @@ namespace ShinGrid
         private List<PanelInstance> _panelInstances;
 
         
+        public event PropertyChangedEventHandler HeightChanged;
+        protected virtual void OnHeightChanged(string propertyName)
+        {
+            HeightChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)
         {

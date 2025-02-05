@@ -76,9 +76,6 @@ namespace ShinGrid
             int availableColumns = Convert.ToInt32(Math.Floor(availableSpace));
 
             float centeredGridWidth = availableColumns * (ShinGridViewModel.Instance.ColumnWidth + ShinGridViewModel.Instance.Spacing) - ShinGridViewModel.Instance.Spacing;
-            
-            if (elementsPositioned) ResizeGrid(centeredGridWidth); // only play animation when elements were already positioned at some point
-            else CenteredGrid.Width = centeredGridWidth;
 
             var sortedFrames = new List<Frame>();
             foreach (Frame frame in CenteredGrid.Children) sortedFrames.Add(frame);
@@ -142,6 +139,12 @@ namespace ShinGrid
                     _filledColumns = panel.ColumnSpan;
                 }
             }
+            if (verticalTranslation == 0 && _filledColumns > 0) centeredGridWidth = _filledColumns * ShinGridViewModel.Instance.RowHeight + (_filledColumns - 1) * Spacing;
+            if (elementsPositioned) ResizeGrid(centeredGridWidth); // only play animation when elements were already positioned at some point
+            else CenteredGrid.Width = centeredGridWidth;
+
+            var finalHeight = verticalTranslation + ShinGridViewModel.Instance.RowHeight + Spacing;
+            ShinGridViewModel.Instance.FinalHeight = finalHeight;
         }
 
         private void ResizeGrid(float NewSize)
