@@ -40,7 +40,7 @@ namespace ShinGrid_TestPanel
                 new PanelInstance { PageType = typeof(RedPage), Index = 4, ColumnSpan = 2 },
                 new PanelInstance { PageType = typeof(BrownPage), Index = 5 },
 
-                /*new PanelInstance { PageType = typeof(YellowPage), Index = 6, ColumnSpan = 2 },
+                new PanelInstance { PageType = typeof(YellowPage), Index = 6, ColumnSpan = 2 },
                 new PanelInstance { PageType = typeof(PurplePage), Index = 7 },
                 new PanelInstance { PageType = typeof(RedPage), Index = 8, ColumnSpan = 3 },
                 new PanelInstance { PageType = typeof(BluePage), Index = 9 },
@@ -70,7 +70,7 @@ namespace ShinGrid_TestPanel
 
                 new PanelInstance { PageType = typeof(YellowPage), Index = 30, ColumnSpan = 2 },
                 new PanelInstance { PageType = typeof(RedPage), Index = 31 },
-                new PanelInstance { PageType = typeof(BluePage), Index = 32, ColumnSpan = 3}*/
+                new PanelInstance { PageType = typeof(BluePage), Index = 32, ColumnSpan = 3}
             };
 
             ShinGridFrame.NavigateToType(typeof(ShinGrid.ShinGrid), null, null);

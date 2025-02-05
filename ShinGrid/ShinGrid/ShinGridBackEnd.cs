@@ -45,7 +45,6 @@ namespace ShinGrid
             {
                 if (_finalHeight != value)
                 {
-                    Debug.WriteLine(value);
                     _finalHeight = value;
                     OnHeightChanged(nameof(FinalHeight));
                 }
