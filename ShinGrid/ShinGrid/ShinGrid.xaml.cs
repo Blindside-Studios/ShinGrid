@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.ViewManagement;
@@ -28,6 +29,7 @@ namespace ShinGrid
     public sealed partial class ShinGrid : Page
     {
         UISettings uiSettings = new UISettings();
+        private bool ReadyForAnimations = false;
 
         public ShinGrid()
         {
@@ -45,13 +47,12 @@ namespace ShinGrid
         private void Instance_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             // this fires when the cards in the layout change, meaning the list must be updated.
-            gridLoaded = false;
-            elementsPositioned = false;
+            ReadyForAnimations = false;
             CenteredGrid.Children.Clear();
             LoadItems();
         }
 
-        public void LoadItems()
+        public async void LoadItems()
         {
             foreach (PanelInstance _panel in ShinGridViewModel.Instance.PanelInstances)
             {
@@ -67,9 +68,10 @@ namespace ShinGrid
                 CenteredGrid.Children.Add(frame);
             }
             CalculateArrangement();
+            await Task.Delay(250);
+            ReadyForAnimations = true; // delay when animations can happen to avoid animating while the grid is placed for the first time.
         }
 
-        private bool elementsPositioned = false;
         public void CalculateArrangement()
         {
             double availableSpace = (RootGrid.ActualWidth + ShinGridViewModel.Instance.Spacing) / (ShinGridViewModel.Instance.ColumnWidth + ShinGridViewModel.Instance.Spacing);
@@ -104,7 +106,7 @@ namespace ShinGrid
                 if (panel.ColumnSpan <= availableColumns - _filledColumns)
                 {
                     _filledColumns += panel.ColumnSpan;
-                    if (uiSettings.AnimationsEnabled && elementsPositioned) frame.TranslationTransition = new Vector3Transition();
+                    if (uiSettings.AnimationsEnabled && ReadyForAnimations) frame.TranslationTransition = new Vector3Transition();
                     else frame.TranslationTransition = null;
                     frame.Translation = new System.Numerics.Vector3(newXTranslation, verticalTranslation, 0);
                 }
@@ -119,7 +121,7 @@ namespace ShinGrid
                             PanelInstance subPanel = subFrame.Tag as PanelInstance;
                             if (subPanel.Index > panel.Index && !_prematurelyPickedCardIndices.Contains(subPanel.Index) && subPanel.ColumnSpan <= remainingSpace)
                             {
-                                if (uiSettings.AnimationsEnabled && elementsPositioned) subFrame.TranslationTransition = new Vector3Transition();
+                                if (uiSettings.AnimationsEnabled && ReadyForAnimations) subFrame.TranslationTransition = new Vector3Transition();
                                 else subFrame.TranslationTransition = null;
                                 subFrame.Translation = new System.Numerics.Vector3(newXTranslation, verticalTranslation, 0);
                                 _prematurelyPickedCardIndices.Add(subPanel.Index);
@@ -133,14 +135,14 @@ namespace ShinGrid
                         if (!foundFit) break;
                     }
                     verticalTranslation += ShinGridViewModel.Instance.RowHeight + Spacing;
-                    if (uiSettings.AnimationsEnabled && elementsPositioned) frame.TranslationTransition = new Vector3Transition();
+                    if (uiSettings.AnimationsEnabled && ReadyForAnimations) frame.TranslationTransition = new Vector3Transition();
                     else frame.TranslationTransition = null;
                     frame.Translation = new System.Numerics.Vector3(0, verticalTranslation, 0);
                     _filledColumns = panel.ColumnSpan;
                 }
             }
             if (verticalTranslation == 0 && _filledColumns > 0) centeredGridWidth = _filledColumns * ShinGridViewModel.Instance.RowHeight + (_filledColumns - 1) * Spacing;
-            if (elementsPositioned) ResizeGrid(centeredGridWidth); // only play animation when elements were already positioned at some point
+            if (ReadyForAnimations) ResizeGrid(centeredGridWidth); // only play animation when elements were already positioned at some point
             else CenteredGrid.Width = centeredGridWidth;
 
             var finalHeight = verticalTranslation + ShinGridViewModel.Instance.RowHeight + Spacing;
@@ -177,12 +179,9 @@ namespace ShinGrid
             }
         }
 
-        bool gridLoaded = false;
         private void RootGrid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (gridLoaded) elementsPositioned = true;
             CalculateArrangement();
-            gridLoaded = true;
         }
     }
 }
